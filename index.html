@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tema Hacker - EU TE AMO</title>
+<style>
+  body {
+    margin: 0;
+    background: black;
+    overflow: hidden;
+    font-family: monospace;
+  }
+  canvas {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+  }
+  #heartText {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #c000ff;
+    font-size: 64px;
+    font-weight: bold;
+    text-shadow:
+      0 0 8px #c000ff,
+      0 0 16px #a000ff,
+      0 0 24px #8000ff,
+      0 0 32px #8000ff;
+    z-index: 10;
+    user-select: none;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="matrix"></canvas>
+<div id="heartText"> EU TE AMO </div>
+
+<script>
+const canvas = document.getElementById('matrix');
+const ctx = canvas.getContext('2d');
+
+let width, height;
+const fontSize = 16;
+let columns;
+let drops;
+
+const phrase = 'EU TE AMO ';
+const phraseLength = phrase.length;
+
+function resize() {
+  width = window.innerWidth;
+  height = window.innerHeight;
+  canvas.width = width;
+  canvas.height = height;
+  columns = Math.floor(width / fontSize);
+  drops = new Array(columns).fill(0);
+}
+window.addEventListener('resize', resize);
+resize();
+
+// Controla o índice das gotas para que avancem em velocidades variadas e mais lentas
+let lastDrawTime = 0;
+const drawInterval = 74; // intervalo em ms (aumente para mais lento)
+
+function draw(time=0) {
+  if (time - lastDrawTime < drawInterval) {
+    requestAnimationFrame(draw);
+    return;
+  }
+  lastDrawTime = time;
+
+  // Fundo preto transparente para efeito de rastro
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+  ctx.fillRect(0, 0, width, height);
+
+  ctx.fillStyle = '#c000ff'; // Roxo forte
+  ctx.font = fontSize + 'px monospace';
+
+  for (let i = 0; i < columns; i++) {
+    // A letra da frase em loop (para sempre repetir "EU TE AMO")
+    const char = phrase[drops[i] % phraseLength];
+    const x = i * fontSize;
+    const y = drops[i] * fontSize;
+
+    ctx.fillText(char, x, y);
+
+    if (y > height && Math.random() > 0.975) {
+      drops[i] = 0;
+    } else {
+      drops[i]++;
+    }
+  }
+
+  requestAnimationFrame(draw);
+}
+
+draw();
+
+
+</script>
+</body>
+</html>
